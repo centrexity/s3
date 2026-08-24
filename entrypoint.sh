@@ -5,39 +5,57 @@ set -e
 # ==========================================
 # 1. UNRAID PERMISSIONS (SMB COMPATIBILITY)
 # ==========================================
-# Default to Unraid's standard IDs (99:100) if variables are not passed
 PUID=${PUID:-99}
 PGID=${PGID:-100}
 
-# Modify the internal apache user to match Unraid's SMB user
-echo "Setting Apache user to PUID: $PUID and PGID: $PGID"
+# Modify Apache user
 groupmod -o -g "$PGID" apache
 usermod -o -u "$PUID" apache
 
-# Modify the internal mysql user and group to match Unraid's SMB user
-echo "Setting MySQL user to PUID: $PUID and PGID: $PGID"
+# Modify MySQL user and ensure runtime socket folder exists with correct permissions
 groupmod -o -g "$PGID" mysql 2>/dev/null || groupadd -g "$PGID" mysql
 usermod -o -u "$PUID" -g "$PGID" mysql 2>/dev/null || usermod -u "$PUID" -g "$PGID" mysql
 
-# Ensure permissions are correct on database mount points and web root
+mkdir -p /run/mysqld
+chown -R mysql:mysql /run/mysqld
+chmod 775 /run/mysqld
+
+# Ensure permissions on database mount points
 chown -R mysql:mysql /var/lib/mysql
-chown -R apache:apache /var/www
-
-
 
 # ==========================================
 # 2. APACHE DIRECTORY STRUCTURE & SYMLINKS
 # ==========================================
-# Ensure the default localhost directory exists to prevent Apache crashes
 mkdir -p /var/www/localhost/htdocs
 
-# Restore Alpine's Apache system shortcuts masked by the Unraid volume
+# Restore Alpine's Apache system shortcuts
 ln -sfn /usr/lib/apache2 /var/www/modules
 ln -sfn /var/log/apache2 /var/www/logs
 ln -sfn /run/apache2 /var/www/run
 
-# Ensure permissions are correct across all hosted domains
+# Create config directories if they don't exist
+mkdir -p /config/apache-domains
+mkdir -p /config/cloudflared
+mkdir -p /config/mysql-conf
+
+# Automatically ensure htdocs and log directories exist for ANY domain config present
+for domain_conf in /config/apache-domains/*.conf; do
+    if [ -f "$domain_conf" ]; then
+        # Extract DocumentRoot path from the conf file, or fall back to standard naming
+        DOM_ROOT=$(grep -i "DocumentRoot" "$domain_conf" | awk '{print $2}' | tr -d '"')
+        if [ -n "$DOM_ROOT" ]; then
+            mkdir -p "$DOM_ROOT"
+            mkdir -p "$(dirname "$DOM_ROOT")/logs"
+        fi
+    fi
+done
+
 chown -R apache:apache /var/www
+find /var/www -type d -exec chmod 755 {} \;
+find /var/www -type f -exec chmod 664 {} \;
+
+
+
 
 # Create config directories if they don't exist
 mkdir -p /config/apache-domains
