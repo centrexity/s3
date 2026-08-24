@@ -87,13 +87,22 @@ TraceEnable Off
 </FilesMatch>
 EOF
 
-# Generate Global PHP Security Config
+
+# Generate Global PHP Security & Upload Config
 cat << 'EOF' > /etc/php83/conf.d/99-global-hardening.ini
 ; Hide PHP version from HTTP headers
 expose_php = Off
 
 ; Disable dangerous OS execution functions (leaving 'exec' intact for FFmpeg)
-disable_functions = system, shell_exec, passthru, popen
+;disable_functions = system, shell_exec, passthru, popen
+
+; 100MB Upload Limits & Timeouts
+file_uploads = On
+upload_max_filesize = 100M
+post_max_size = 100M
+memory_limit = 256M
+max_execution_time = 300
+max_input_time = 300
 EOF
 
 # ==========================================
