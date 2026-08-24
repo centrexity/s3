@@ -3,7 +3,13 @@ set -e
 
 # Ensure permissions are correct on mount points
 chown -R mysql:mysql /var/lib/mysql
-chown -R apache:apache /var/www/localhost/htdocs
+
+# Ensure the default localhost directory exists to prevent Apache crashes
+mkdir -p /var/www/localhost/htdocs
+
+# Ensure permissions are correct across all hosted domains
+chown -R apache:apache /var/www
+
 
 # Create config directories if they don't exist
 mkdir -p /config/apache-domains
