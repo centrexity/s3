@@ -7,6 +7,12 @@ chown -R mysql:mysql /var/lib/mysql
 # Ensure the default localhost directory exists to prevent Apache crashes
 mkdir -p /var/www/localhost/htdocs
 
+# Restore Alpine's Apache system shortcuts masked by the Unraid volume
+ln -sfn /usr/lib/apache2 /var/www/modules
+ln -sfn /var/log/apache2 /var/www/logs
+ln -sfn /run/apache2 /var/www/run
+
+
 # Ensure permissions are correct across all hosted domains
 chown -R apache:apache /var/www
 
