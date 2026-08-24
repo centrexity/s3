@@ -39,9 +39,9 @@ mkdir -p /config/mysql-conf
 # PERMANENT FIX: Force correct ownership and recursive write permissions
 # Directories need 755 so SQLite can create lock/journal files inside them
 # Files need 664 so SQLite can modify the database data
-chown -R apache:apache /var/www
-find /var/www -type d -exec chmod 755 {} \;
-find /var/www -type f -exec chmod 664 {} \;
+#chown -R apache:apache /var/www
+#find /var/www -type d -exec chmod 755 {} \;
+#find /var/www -type f -exec chmod 664 {} \;
 
 # Force PHP-FPM to run as the 'apache' user instead of 'nobody'
 sed -i 's/user = nobody/user = apache/g' /etc/php83/php-fpm.d/www.conf
@@ -51,8 +51,8 @@ sed -i 's/user = www-data/user = apache/g' /etc/php83/php-fpm.d/www.conf
 sed -i 's/group = www-data/group = apache/g' /etc/php83/php-fpm.d/www.conf
 
 #chown -R 999:999 /var/lib/mysql/
-chown -R mysql:mysql /var/lib/mysql
-chmod -R 770 /var/lib/mysql
+#chown -R mysql:mysql /var/lib/mysql
+#chmod -R 770 /var/lib/mysql
 
 
 # ==========================================
