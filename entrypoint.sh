@@ -38,8 +38,9 @@ mkdir -p /config/mysql-conf
 # ==========================================
 # 3. GLOBAL HARDENING: APACHE & PHP
 # ==========================================
-# Ensure Apache's headers module is enabled
+# Ensure Apache's headers, rewrite, and proxy modules are enabled
 sed -i '/LoadModule headers_module/s/^#//g' /etc/apache2/httpd.conf
+sed -i '/LoadModule rewrite_module/s/^#//g' /etc/apache2/httpd.conf
 
 # Generate Global Apache Security Config
 cat << 'EOF' > /etc/apache2/conf.d/00-global-security.conf
