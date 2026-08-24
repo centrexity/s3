@@ -18,7 +18,8 @@ RUN apk update && \
     php83-xml \
     php83-zip \
     php83-session \
-    php83-sqlite \
+    php83-sqlite3 \
+    php83-pdo_sqlite \
     imagemagick \
     ffmpeg \
     tzdata \
