@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-# Install Apache, MariaDB, PHP 8.3, FFmpeg, ImageMagick, Supervisor, and dependencies
+# Install Apache, MariaDB, PHP 8.3 FPM, FFmpeg, ImageMagick, Supervisor, and dependencies
 RUN apk update && \
     apk add --no-cache \
     bash \
@@ -9,7 +9,7 @@ RUN apk update && \
     mariadb \
     mariadb-client \
     php83 \
-    php83-apache2 \
+    php83-fpm \
     php83-mysqli \
     php83-pdo_mysql \
     php83-curl \
@@ -31,10 +31,15 @@ RUN apk update && \
 RUN wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -O /usr/bin/cloudflared && \
     chmod +x /usr/bin/cloudflared
 
-# Enable mod_remoteip so Apache logs the real visitor IP (CF-Connecting-IP)
+# Enable IP pass-through and FastCGI Proxy in Apache
 RUN sed -i '/LoadModule remoteip_module/s/^#//g' /etc/apache2/httpd.conf && \
     echo "RemoteIPHeader CF-Connecting-IP" >> /etc/apache2/httpd.conf && \
-    sed -i 's/%h/%a/g' /etc/apache2/httpd.conf
+    sed -i 's/%h/%a/g' /etc/apache2/httpd.conf && \
+    sed -i '/LoadModule proxy_module/s/^#//g' /etc/apache2/httpd.conf && \
+    sed -i '/LoadModule proxy_fcgi_module/s/^#//g' /etc/apache2/httpd.conf && \
+    echo "<FilesMatch \.php$>" >> /etc/apache2/httpd.conf && \
+    echo "    SetHandler \"proxy:fcgi://127.0.0.1:9000\"" >> /etc/apache2/httpd.conf && \
+    echo "</FilesMatch>" >> /etc/apache2/httpd.conf
 
 # Create necessary directories and tell Apache to load domain configs from the volume
 RUN mkdir -p /run/mysqld && chown -R mysql:mysql /run/mysqld && \
@@ -49,7 +54,7 @@ RUN chmod +x /entrypoint.sh
 # Expose HTTP and MySQL ports
 EXPOSE 80 3306
 
-# Declare volumes: MySQL database, Web root, and App configuration (domains + CF token)
-VOLUME ["/var/lib/mysql", "/var/www/localhost/htdocs", "/config"]
+# Declare volumes
+VOLUME ["/var/lib/mysql", "/var/www", "/config"]
 
 ENTRYPOINT ["/entrypoint.sh"]
