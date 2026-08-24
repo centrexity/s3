@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+
 # ==========================================
 # 1. UNRAID PERMISSIONS (SMB COMPATIBILITY)
 # ==========================================
@@ -13,8 +14,16 @@ echo "Setting Apache user to PUID: $PUID and PGID: $PGID"
 groupmod -o -g "$PGID" apache
 usermod -o -u "$PUID" apache
 
-# Ensure permissions are correct on database mount points
+# Modify the internal mysql user and group to match Unraid's SMB user
+echo "Setting MySQL user to PUID: $PUID and PGID: $PGID"
+groupmod -o -g "$PGID" mysql 2>/dev/null || groupadd -g "$PGID" mysql
+usermod -o -u "$PUID" -g "$PGID" mysql 2>/dev/null || usermod -u "$PUID" -g "$PGID" mysql
+
+# Ensure permissions are correct on database mount points and web root
 chown -R mysql:mysql /var/lib/mysql
+chown -R apache:apache /var/www
+
+
 
 # ==========================================
 # 2. APACHE DIRECTORY STRUCTURE & SYMLINKS
@@ -35,13 +44,6 @@ mkdir -p /config/apache-domains
 mkdir -p /config/cloudflared
 mkdir -p /config/mysql-conf
 
-
-# PERMANENT FIX: Force correct ownership and recursive write permissions
-# Directories need 755 so SQLite can create lock/journal files inside them
-# Files need 664 so SQLite can modify the database data
-#chown -R apache:apache /var/www
-#find /var/www -type d -exec chmod 755 {} \;
-#find /var/www -type f -exec chmod 664 {} \;
 
 # Force PHP-FPM to run as the 'apache' user instead of 'nobody'
 sed -i 's/user = nobody/user = apache/g' /etc/php83/php-fpm.d/www.conf
