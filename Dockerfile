@@ -31,8 +31,10 @@ RUN apk update && \
 RUN wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -O /usr/bin/cloudflared && \
     chmod +x /usr/bin/cloudflared
 
-# Enable IP pass-through and FastCGI Proxy in Apache
-RUN sed -i '/LoadModule remoteip_module/s/^#//g' /etc/apache2/httpd.conf && \
+# Enable IP pass-through, FastCGI Proxy, and switch to the modern Event MPM
+RUN sed -i 's/^LoadModule mpm_prefork_module/#LoadModule mpm_prefork_module/g' /etc/apache2/httpd.conf && \
+    sed -i 's/^#LoadModule mpm_event_module/LoadModule mpm_event_module/g' /etc/apache2/httpd.conf && \
+    sed -i '/LoadModule remoteip_module/s/^#//g' /etc/apache2/httpd.conf && \
     echo "RemoteIPHeader CF-Connecting-IP" >> /etc/apache2/httpd.conf && \
     sed -i 's/%h/%a/g' /etc/apache2/httpd.conf && \
     sed -i '/LoadModule proxy_module/s/^#//g' /etc/apache2/httpd.conf && \
