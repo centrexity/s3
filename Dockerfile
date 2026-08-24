@@ -54,7 +54,7 @@ COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # Expose HTTP and MySQL ports
-EXPOSE 80 3306
+#EXPOSE 80 3306
 
 # Declare volumes
 VOLUME ["/var/lib/mysql", "/var/www", "/config"]
