@@ -1,0 +1,4 @@
+
+
+Unraid Web GUI (No XML needed)
+You can fill out the native Unraid Docker form directly:1.Open the Add Container form:Go to the Docker tab in Unraid and click Add Container at the bottom.2.Fill in basic container details:Set the following fields:Name: centrexity-s3Repository: ghcr.io/centrexity/s3:mainNetwork Type: bridge(Leave all port mappings blank/deleted).3.Add volume paths:Click Add another Path, Port, Variable, Device or Extra Parameter 3 times to map the storage:Path 1 (Config):Name: ConfigContainer Path: /configHost Path: /mnt/user/appdata/centrexity-s3/configPath 2 (Web Root):Name: Web FilesContainer Path: /var/www/localhost/htdocsHost Path: /mnt/user/appdata/centrexity-s3/wwwPath 3 (Database):Name: MySQL DataContainer Path: /var/lib/mysqlHost Path: /mnt/user/appdata/centrexity-s3/mysql4.Deploy:Click Apply. Unraid saves its own local configuration and starts the container.
