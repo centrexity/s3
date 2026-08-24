@@ -43,6 +43,13 @@ chown -R apache:apache /var/www
 find /var/www -type d -exec chmod 755 {} \;
 find /var/www -type f -exec chmod 664 {} \;
 
+# Force PHP-FPM to run as the 'apache' user instead of 'nobody'
+sed -i 's/user = nobody/user = apache/g' /etc/php83/php-fpm.d/www.conf
+sed -i 's/group = nobody/group = apache/g' /etc/php83/php-fpm.d/www.conf
+# Sometimes Alpine defaults them to 'www-data', so let's handle that too just in case
+sed -i 's/user = www-data/user = apache/g' /etc/php83/php-fpm.d/www.conf
+sed -i 's/group = www-data/group = apache/g' /etc/php83/php-fpm.d/www.conf
+
 
 
 
