@@ -4,8 +4,10 @@ FROM alpine:latest
 RUN apk update && \
     apk add --no-cache \
     bash \
+    shadow \
     supervisor \
     apache2 \
+    apache2-proxy \
     mariadb \
     mariadb-client \
     php83 \
