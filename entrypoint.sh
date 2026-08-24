@@ -52,7 +52,7 @@ ServerSignature Off
 TraceEnable Off
 
 # Inject Global Security Headers
-<IfModule mod_headers.c>
+<IfModule mod_headers.h>
     Header always set X-Content-Type-Options "nosniff"
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set X-XSS-Protection "1; mode=block"
@@ -114,6 +114,14 @@ if [ -z "$(ls -A /config/apache-domains)" ]; then
 </VirtualHost>
 EOF
 fi
+
+# Automatically ensure log directories exist for any custom domain structure
+for domain_dir in /var/www/*/; do
+    if [ -d "${domain_dir}htdocs" ]; then
+        mkdir -p "${domain_dir}logs"
+        chown -R apache:apache "${domain_dir}logs"
+    fi
+done
 
 # Generate placeholder Cloudflare token file if one doesn't exist
 TOKEN_FILE="/config/cloudflared/token.txt"
