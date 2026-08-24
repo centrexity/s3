@@ -22,11 +22,6 @@ chown -R mysql:mysql /var/lib/mysql
 # Ensure the default localhost directory exists to prevent Apache crashes
 mkdir -p /var/www/localhost/htdocs
 
-# PERMANENT FIX: Ensure correct ownership and write permissions for SQLite & uploads
-chown -R apache:apache /var/www
-find /var/www -type d -exec chmod 755 {} \;
-find /var/www -type f -exec chmod 664 {} \;
-
 # Restore Alpine's Apache system shortcuts masked by the Unraid volume
 ln -sfn /usr/lib/apache2 /var/www/modules
 ln -sfn /var/log/apache2 /var/www/logs
@@ -39,6 +34,17 @@ chown -R apache:apache /var/www
 mkdir -p /config/apache-domains
 mkdir -p /config/cloudflared
 mkdir -p /config/mysql-conf
+
+
+# PERMANENT FIX: Force correct ownership and recursive write permissions
+# Directories need 755 so SQLite can create lock/journal files inside them
+# Files need 664 so SQLite can modify the database data
+chown -R apache:apache /var/www
+find /var/www -type d -exec chmod 755 {} \;
+find /var/www -type f -exec chmod 664 {} \;
+
+
+
 
 # ==========================================
 # 3. GLOBAL HARDENING: APACHE & PHP
