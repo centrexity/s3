@@ -54,5 +54,19 @@ fi
 EOF
 chmod +x /usr/local/bin/run-cloudflared.sh
 
+# Create a folder for custom MySQL configs on the volume
+mkdir -p /config/mysql-conf
+
+# Generate a blank custom config if one doesn't exist
+if [ ! -f "/config/mysql-conf/custom.cnf" ]; then
+    echo "[mysqld]" > /config/mysql-conf/custom.cnf
+    echo "# Add your custom MariaDB settings here" >> /config/mysql-conf/custom.cnf
+fi
+
+# Tell MariaDB to load any custom configs from the volume
+if ! grep -q "!includedir /config/mysql-conf" /etc/my.cnf.d/mariadb-server.cnf; then
+    echo "!includedir /config/mysql-conf" >> /etc/my.cnf.d/mariadb-server.cnf
+fi
+
 # Launch Supervisor to manage Apache, MariaDB, Cron, and Cloudflared
 exec /usr/bin/supervisord -n -c /etc/supervisord.conf
