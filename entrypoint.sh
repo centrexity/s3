@@ -51,6 +51,8 @@ sed -i 's/user = www-data/user = apache/g' /etc/php83/php-fpm.d/www.conf
 sed -i 's/group = www-data/group = apache/g' /etc/php83/php-fpm.d/www.conf
 
 #chown -R 999:999 /var/lib/mysql/
+chown -R mysql:mysql /var/lib/mysql
+chmod -R 770 /var/lib/mysql
 
 
 # ==========================================
