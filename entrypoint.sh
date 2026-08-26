@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+echo "Starting S3"
+
 
 # ==========================================
 # 1. UNRAID PERMISSIONS (SMB COMPATIBILITY)
