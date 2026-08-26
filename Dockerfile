@@ -15,6 +15,7 @@ RUN apk update && \
     php83-mysqli \
     php83-pdo_mysql \
     php83-curl \
+    php83-dom \
     php83-gd \
     php83-mbstring \
     php83-xml \
