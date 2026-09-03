@@ -4,6 +4,7 @@ FROM alpine:latest
 RUN apk update && \
     apk add --no-cache \
     bash \
+    git openssh-client-default ca-certificates curl webhook \
     shadow \
     supervisor \
     apache2 \
@@ -18,6 +19,7 @@ RUN apk update && \
     php83-dom \
     php83-gd \
     php83-mbstring \
+    php83-opcache \
     php83-xml \
     php83-zip \
     php83-session \
