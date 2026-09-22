@@ -52,9 +52,21 @@ for domain_conf in /config/apache-domains/*.conf; do
     fi
 done
 
-chown -R apache:apache /var/www
-find /var/www -type d -exec chmod 755 {} \;
-find /var/www -type f -exec chmod 664 {} \;
+#chown -R apache:apache /var/www
+#find /var/www -type d -exec chmod 755 {} \;
+#find /var/www -type f -exec chmod 664 {} \;
+
+# 1. Instantly apply permissions to the domain roots, htdocs, and logs directories ONLY
+# The * wildcard automatically finds all domain folders
+chown apache:apache /var/www/* /var/www/*/htdocs /var/www/*/logs 2>/dev/null
+chmod 755 /var/www/* /var/www/*/htdocs /var/www/*/logs 2>/dev/null
+
+# 2. Run the heavy, recursive permission sweep on all files and subfolders in the background
+(
+  chown -R apache:apache /var/www
+  find /var/www -type d -exec chmod 755 {} +
+  find /var/www -type f -exec chmod 664 {} +
+) &
 
 
 
