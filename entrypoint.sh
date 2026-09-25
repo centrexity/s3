@@ -63,11 +63,10 @@ chmod 755 /var/www/* /var/www/*/htdocs /var/www/*/logs 2>/dev/null
 
 # 2. Run the heavy, recursive permission sweep on all files and subfolders in the background
 (
-  chown -R apache:apache /var/www
-  find /var/www -type d -exec chmod 755 {} +
-  find /var/www -type f -exec chmod 664 {} +
+  find /var/www -maxdepth 3 -exec chown apache:apache {} +
+  find /var/www -maxdepth 3 -type d -exec chmod 755 {} +
+  find /var/www -maxdepth 3 -type f -exec chmod 664 {} +
 ) &
-
 
 
 
