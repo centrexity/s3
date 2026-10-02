@@ -11,6 +11,7 @@ RUN apk update && \
     apache2-proxy \
     mariadb \
     mariadb-client \
+    openssh-client \
     php83 \
     php83-fpm \
     php83-mysqli \
