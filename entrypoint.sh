@@ -203,8 +203,31 @@ fi
 EOF
 chmod +x /usr/local/bin/run-cloudflared.sh
 
+
 # ==========================================
-# 5. LAUNCH SUPERVISOR
+# 5. AUTOMATED CRON SETUP (EVERY 1 MINUTE)
+# ==========================================
+# Ensure curl is available for HTTP requests
+if ! command -v curl &> /dev/null; then
+    apk add --no-cache curl
+fi
+
+# Write the cron schedule for the apache user
+# Runs every minute, silencing output to keep logs clean
+echo "* * * * * /usr/bin/curl -s http://localhost/api/cron.php >/dev/null 2>&1" > /etc/crontabs/apache
+
+# Ensure proper permissions on the crontab directory
+chmod 600 /etc/crontabs/apache
+chown root:root /etc/crontabs/apache
+
+# Start Alpine's cron daemon in the background
+crond
+echo "Cron service started successfully."
+
+
+
+# ==========================================
+# 6. LAUNCH SUPERVISOR
 # ==========================================
 # Launch Supervisor to manage Apache, MariaDB, Cron, PHP-FPM, and Cloudflared
 exec /usr/bin/supervisord -n -c /etc/supervisord.conf
