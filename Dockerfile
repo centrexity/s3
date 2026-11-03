@@ -9,6 +9,7 @@ RUN apk update && \
     supervisor \
     apache2 \
     apache2-proxy \
+    libwebp-dev \
     mariadb \
     mariadb-client \
     openssh-client \
