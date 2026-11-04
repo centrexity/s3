@@ -231,3 +231,5 @@ echo "Cron service started successfully."
 # ==========================================
 # Launch Supervisor to manage Apache, MariaDB, Cron, PHP-FPM, and Cloudflared
 exec /usr/bin/supervisord -n -c /etc/supervisord.conf
+
+echo "S3 Launched"
