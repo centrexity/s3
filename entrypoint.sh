@@ -12,7 +12,9 @@ PGID=${PGID:-100}
 
 # Modify Apache user
 groupmod -o -g "$PGID" apache
-usermod -o -u "$PUID" apache
+#usermod -o -u "$PUID" apache
+sed -i 's/^\(apache:[^:]*:\)[0-9]*/\1'"$PUID"'/' /etc/passwd
+
 
 # Modify MySQL user and ensure runtime socket folder exists with correct permissions
 groupmod -o -g "$PGID" mysql 2>/dev/null || groupadd -g "$PGID" mysql
