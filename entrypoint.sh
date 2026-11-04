@@ -30,6 +30,7 @@ chown -R mysql:mysql /var/lib/mysql
 # ==========================================
 # 2. APACHE DIRECTORY STRUCTURE & SYMLINKS
 # ==========================================
+echo "S3 APACHE DIRECTORY STRUCTURE & SYMLINKS"
 mkdir -p /var/www/localhost/htdocs
 
 # Restore Alpine's Apache system shortcuts
