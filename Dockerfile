@@ -4,7 +4,7 @@ FROM alpine:latest
 RUN apk update && \
     apk add --no-cache \
     bash \
-    git openssh-client-default ca-certificates curl webhook \
+    git openssh openssh-client-default ca-certificates curl webhook \
     shadow \
     supervisor \
     apache2 \
