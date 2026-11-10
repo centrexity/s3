@@ -59,17 +59,21 @@ done
 #find /var/www -type d -exec chmod 755 {} \;
 #find /var/www -type f -exec chmod 664 {} \;
 
+
+echo "Setting permissions"
 # 1. Instantly apply permissions to the domain roots, htdocs, and logs directories ONLY
 # The * wildcard automatically finds all domain folders
 chown apache:apache /var/www/* /var/www/*/htdocs /var/www/*/logs 2>/dev/null
 chmod 755 /var/www/* /var/www/*/htdocs /var/www/*/logs 2>/dev/null
 
+echo "Setting permissions recursive"
 # 2. Run the heavy, recursive permission sweep on all files and subfolders in the background
 (
   find /var/www -maxdepth 3 -exec chown apache:apache {} +
   find /var/www -maxdepth 3 -type d -exec chmod 755 {} +
   find /var/www -maxdepth 3 -type f -exec chmod 664 {} +
 ) &
+echo "Setting permission section after"
 
 
 
@@ -90,6 +94,7 @@ sed -i 's/group = www-data/group = apache/g' /etc/php83/php-fpm.d/www.conf
 # ==========================================
 # 3. GLOBAL HARDENING: APACHE & PHP
 # ==========================================
+echo "Setting Apache and PHP"
 # Ensure Apache's headers, rewrite, and proxy modules are enabled
 sed -i '/LoadModule headers_module/s/^#//g' /etc/apache2/httpd.conf
 sed -i '/LoadModule rewrite_module/s/^#//g' /etc/apache2/httpd.conf
