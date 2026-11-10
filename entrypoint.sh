@@ -237,7 +237,8 @@ EOF
 fi
 
 # Run optional private setup script if present
-if [ -x /config/ssh/setup.sh ]; then
+if [ -f /config/ssh/setup.sh ]; then
+    chmod +x /config/ssh/setup.sh
     /config/ssh/setup.sh
 fi
 
