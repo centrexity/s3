@@ -1,0 +1,17 @@
+; Copy to /config/php-fpm/pools.d/zagd.conf to enable.
+; Use a unique pool name, socket and log for each site.
+[zagd]
+user = apache
+group = apache
+listen = /run/php-fpm/zagd.sock
+listen.owner = apache
+listen.group = apache
+listen.mode = 0660
+
+pm = ondemand
+pm.max_children = 3
+pm.process_idle_timeout = 20s
+pm.max_requests = 500
+
+request_slowlog_timeout = 5s
+slowlog = /config/php-fpm/logs/zagd-slow.log

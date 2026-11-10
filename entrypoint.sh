@@ -91,6 +91,16 @@ sed -i 's/user = www-data/user = apache/g' /etc/php83/php-fpm.d/www.conf
 sed -i 's/group = www-data/group = apache/g' /etc/php83/php-fpm.d/www.conf
 
 
+# Persistent, opt-in pools. Keep www.conf and port 9000 for unmigrated sites.
+mkdir -p /config/php-fpm/pools.d /config/php-fpm/logs /run/php-fpm
+chown root:apache /run/php-fpm
+chmod 0750 /run/php-fpm
+chown apache:apache /config/php-fpm/logs
+chmod 0750 /config/php-fpm/logs
+cat > /etc/php83/php-fpm.d/zz-persistent-pools.conf <<'EOF'
+include=/config/php-fpm/pools.d/*.conf
+EOF
+
 # ==========================================
 # 3. GLOBAL HARDENING: APACHE & PHP
 # ==========================================
@@ -269,9 +279,7 @@ echo "* * * * * /usr/bin/curl -s http://localhost/api/cron.php >/dev/null 2>&1" 
 chmod 600 /etc/crontabs/apache
 chown root:root /etc/crontabs/apache
 
-# Start Alpine's cron daemon in the background
-crond
-echo "Cron service started successfully."
+# Supervisor starts and manages the only cron daemon.
 
 
 
@@ -279,6 +287,9 @@ echo "Cron service started successfully."
 # 6. LAUNCH SUPERVISOR
 # ==========================================
 # Launch Supervisor to manage Apache, MariaDB, Cron, PHP-FPM, and Cloudflared
+# Reject invalid configuration before starting the supervised services.
+/usr/sbin/php-fpm83 -t
+/usr/sbin/httpd -t
 exec /usr/bin/supervisord -n -c /etc/supervisord.conf
 
 echo "S3 Launched"

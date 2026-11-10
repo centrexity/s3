@@ -58,6 +58,7 @@ RUN mkdir -p /run/mysqld && chown -R mysql:mysql /run/mysqld && \
 # Copy configuration and startup scripts
 COPY supervisord.conf /etc/supervisord.conf
 COPY entrypoint.sh /entrypoint.sh
+COPY examples/ /usr/share/s3/examples/
 RUN chmod +x /entrypoint.sh
 
 # Expose HTTP and MySQL ports

@@ -1,0 +1,4 @@
+# Inside the existing zagd.com <VirtualHost>, replace its PHP handler with:
+<FilesMatch "\.php$">
+    SetHandler "proxy:unix:/run/php-fpm/zagd.sock|fcgi://localhost/"
+</FilesMatch>
