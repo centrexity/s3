@@ -207,6 +207,46 @@ EOF
 chmod +x /usr/local/bin/run-cloudflared.sh
 
 
+
+
+
+# ==========================================
+# SSH SETUP
+# ==========================================
+mkdir -p /config/ssh /etc/ssh /var/empty
+
+# Generate host keys once
+if [ ! -f /etc/ssh/ssh_host_ed25519_key ]; then
+    ssh-keygen -A
+fi
+
+# Use custom sshd_config from the volume if present
+if [ -f /config/ssh/sshd_config ]; then
+    cp /config/ssh/sshd_config /etc/ssh/sshd_config
+else
+    # Safe default (password auth disabled)
+    cat > /etc/ssh/sshd_config << 'EOF'
+Port 22
+PermitRootLogin no
+PasswordAuthentication no
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys
+UsePAM yes
+Subsystem sftp internal-sftp
+EOF
+fi
+
+# Run optional private setup script if present
+if [ -x /config/ssh/setup.sh ]; then
+    /config/ssh/setup.sh
+fi
+
+
+
+
+
+
+
 # ==========================================
 # 5. AUTOMATED CRON SETUP (EVERY 1 MINUTE)
 # ==========================================
