@@ -58,8 +58,9 @@ RUN mkdir -p /run/mysqld && chown -R mysql:mysql /run/mysqld && \
 # Copy configuration and startup scripts
 COPY supervisord.conf /etc/supervisord.conf
 COPY entrypoint.sh /entrypoint.sh
+COPY persist-ssh-host-keys.sh /usr/local/bin/persist-ssh-host-keys.sh
 COPY examples/ /usr/share/s3/examples/
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /entrypoint.sh /usr/local/bin/persist-ssh-host-keys.sh
 
 # Expose HTTP and MySQL ports
 #EXPOSE 80 3306

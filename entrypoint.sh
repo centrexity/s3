@@ -230,10 +230,8 @@ chmod +x /usr/local/bin/run-cloudflared.sh
 # ==========================================
 mkdir -p /config/ssh /etc/ssh /var/empty
 
-# Generate host keys once
-if [ ! -f /etc/ssh/ssh_host_ed25519_key ]; then
-    ssh-keygen -A
-fi
+# Preserve server identity on the persistent config volume.
+/usr/local/bin/persist-ssh-host-keys.sh
 
 # Use custom sshd_config from the volume if present
 if [ -f /config/ssh/sshd_config ]; then

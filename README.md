@@ -41,3 +41,19 @@ Supervisor exclusively manages cron; the entrypoint only creates its schedule.
 Before releasing the image, verify legacy PHP routing, two independently routed
 pools, bounded worker exhaustion in one pool while the other responds, restart
 and recreation persistence, and one cron daemon executing each job once.
+
+
+## Persistent SSH server identity
+
+SSH host keys are stored in `/config/ssh/host_keys/` on the existing config volume.
+Startup restores saved keys into `/etc/ssh/` before generating any missing keys.
+Existing container keys are adopted when no saved key exists. Saved keys are
+validated; invalid keys cause startup to fail instead of silently changing the
+server identity. Public keys are derived from their matching private keys.
+The directory is root-owned with mode 0700; private keys use mode 0600.
+
+Before the first image replacement, preserve the current identity by copying the
+running container's private keys to that persistent directory. Once the old
+container has been removed, this update cannot recover its discarded keys.
+Keep this directory with the config volume when replacing the container.
+Host private keys are runtime data and are never included in this repository.
